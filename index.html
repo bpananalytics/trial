@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Word Frequency Analyzer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+    }
+    canvas {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Word Frequency Analyzer</h1>
+  <textarea id="textInput" placeholder="Paste your text here..."></textarea>
+  <br>
+  <button onclick="analyzeText()">Submit</button>
+  <canvas id="barChart"></canvas>
+
+  <script>
+    function analyzeText() {
+      const text = document.getElementById("textInput").value;
+      const words = text.toLowerCase().match(/\b\w+\b/g);
+      if (!words) return;
+
+      const freqMap = {};
+      words.forEach(word => {
+        freqMap[word] = (freqMap[word] || 0) + 1;
+      });
+
+      const sorted = Object.entries(freqMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10); // top 10 words
+
+      const labels = sorted.map(entry => entry[0]);
+      const data = sorted.map(entry => entry[1]);
+
+      renderChart(labels, data);
+    }
+
+    let chart;
+    function renderChart(labels, data) {
+      const ctx = document.getElementById('barChart').getContext('2d');
+      if (chart) chart.destroy(); // Destroy previous chart if any
+
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Word Frequency',
+            data: data,
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
